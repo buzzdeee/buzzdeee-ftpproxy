@@ -29,21 +29,32 @@
 #
 # === Authors
 #
-# Author Name <author@domain.com>
+# Author Name <sebastia@l00-bugdead-prods.de>
 #
 # === Copyright
 #
 # Copyright 2014 Your name here, unless otherwise noted.
 #
-class ftpproxy (
+define ftpproxy (
   $service_ensure  = 'running',
   $service_enable  = true,
   $service_flags   = undef,
 ){
 
-  service { "$name":
-    ensure  => $service_ensure,
-    enable  => $service_enable,
-    flags   => $service_flags,
+  if $title != "ftpproxy" {
+    $service_name = regsubst($title, '-', '_', 'G')
+    exec { "copy ftpproxy ${service_name}":
+      command => "/bin/cp /etc/rc.d/ftpproxy /etc/rc.d/${service_name}"
+      creates => "/etc/rc.d/${service_name}",
+      before  => Service[$service_name],
+    }
+  } else {
+    $service_name = $title
+  }
+
+  service { $service_name:
+    ensure => $service_ensure,
+    enable => $service_enable,
+    flags  => $service_flags,
   }
 }
