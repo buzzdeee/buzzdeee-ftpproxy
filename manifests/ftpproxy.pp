@@ -29,21 +29,33 @@
 #
 # === Authors
 #
-# Author Name <author@domain.com>
+# Sebastian Reitenbach <sebastia@l00-bugdead-prods.de>
 #
 # === Copyright
 #
 # Copyright 2014 Your name here, unless otherwise noted.
 #
 define ftpproxy::ftpproxy (
-  $service_ensure  = 'running',
-  $service_enable  = true,
-  $service_flags   = undef,
+  $ensure = 'running',
+  $enable = true,
+  $flags  = undef,
 ){
 
-  service { "$name":
-    ensure  => $service_ensure,
-    enable  => $service_enable,
-    flags   => $service_flags,
+  if $title == 'ftpproxy' {
+    $service_name = $title
+  } else {
+    $tmp = regsubst($title, '[/ ]', '_', 'G')
+    $service_name = "ftpproxy_${tmp}"
+    exec { "cp ftpproxy ftpproxy_${title}":
+      command => "/bin/cp /etc/rc.d/ftpproxy /etc/rc.d/ftpproxy_${title}",
+      creates => "/etc/rc.d/ftpproxy_${title}",
+      before  => Service[$service_name],
+    }
+  }
+
+  service { $service_name:
+    ensure => $ensure,
+    enable => $enable,
+    flags  => $flags,
   }
 }
