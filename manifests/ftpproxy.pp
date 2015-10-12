@@ -46,9 +46,9 @@ define ftpproxy::ftpproxy (
   } else {
     $tmp = regsubst($title, '[/ ]', '_', 'G')
     $service_name = "ftpproxy_${tmp}"
-    exec { "cp ftpproxy ftpproxy_${title}":
-      command => "/bin/cp /etc/rc.d/ftpproxy /etc/rc.d/ftpproxy_${title}",
-      creates => "/etc/rc.d/ftpproxy_${title}",
+    exec { "cp ftpproxy ${service_name}":
+      command => "/bin/cp /etc/rc.d/ftpproxy /etc/rc.d/${service_name}",
+      creates => "/etc/rc.d/${service_name}",
       before  => Service[$service_name],
     }
   }
